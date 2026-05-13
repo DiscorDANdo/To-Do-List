@@ -1,12 +1,57 @@
-import  { useState } from "react" 
-import Insert from "./assets/Components/Insert"
-import TaskList from "./assets/Components/TaskList"
+import { useState } from "react";
+import Insert from "./assets/Components/Insert";
+import TaskList from "./assets/Components/TaskList";
 
 function App() {
-  const [tasks, setTasks] = useState([]);
+  const localTasks = JSON.parse(window.localStorage.getItem("tasks")) || [];
+  const [tasks, setTasks] = useState(localTasks);
 
-  function AddTask(task) {
-    let auxTasks = tasks;
+  function saveEditTask(task, title) {
+    // 1. Create a shallow copy of the state array
+    let auxTasks = [...tasks]; 
+    
+    const editedTask = {
+      id: task.id,
+      task: title || task.task,
+      status: task.status,
+      created_at: task.created_at,
+    };
+
+    const findTaskPosition = auxTasks.findIndex(
+      (t) => t.id === editedTask.id
+    );
+
+    // 2. Splice the copy, not the original state
+    auxTasks.splice(findTaskPosition, 1, editedTask);
+
+    localStorage.setItem("tasks", JSON.stringify(auxTasks));
+    GetTasks();
+  }
+
+  function saveConcludedTask(task) {
+    // 1. Create a shallow copy
+    let auxTasks = [...tasks]; 
+    
+    const editedTask = {
+      id: task.id,
+      task: task.task,
+      status: "concluded",
+      created_at: task.created_at,
+    };
+
+    const findTaskPosition = auxTasks.findIndex(
+      (t) => t.id === editedTask.id
+    );
+
+    auxTasks.splice(findTaskPosition, 1, editedTask);
+
+    localStorage.setItem("tasks", JSON.stringify(auxTasks));
+    GetTasks();
+  }
+
+  function AddTask(taskDescription) {
+    // 1. Create a shallow copy
+    let auxTasks = [...tasks]; 
     let id = 0;
 
     if (auxTasks.length) {
@@ -16,10 +61,11 @@ function App() {
 
     const createdTask = {
       id: id,
-      task: task,
+      task: taskDescription,
       status: "pending",
       created_at: new Date(Date.now()).toUTCString()
-    }
+    };
+    
     auxTasks.push(createdTask);
     localStorage.setItem("tasks", JSON.stringify(auxTasks));
     GetTasks();
@@ -36,9 +82,14 @@ function App() {
       </div>
 
       <Insert AddTask={AddTask} />
-      <TaskList tasks={tasks} />
+      <TaskList 
+        tasks={tasks}
+        saveEditTask={saveEditTask}
+        // Fixed the prop name below to match what TasksItems expects
+        saveConcludedTask={saveConcludedTask} 
+      />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
