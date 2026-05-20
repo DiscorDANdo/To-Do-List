@@ -11,7 +11,8 @@ export default function TasksItems(props) {
     const concluded = props.tasks.status === "concluded";
 
     return (
-        <div className="flex gap-4 flex-col items-center">
+        <div className="flex gap-4 flex-col items-center"
+        data-testid="task-item">
             <div className="flex gap-4 items-center w-full">
                 <input disabled={concluded}
                     type="checkbox"
@@ -25,11 +26,15 @@ export default function TasksItems(props) {
                         }
                     }}/>
                 {editMode && !concluded ? (<input placeholder="Task" value={title} onChange={(e) => setTitle(e.target.value)}/>)
-                : (<p className={`wrap-break-word ${concluded ? "line-through" : ""}`}>{props.tasks.task}</p>)}  
+                : (<p className={`wrap-break-word ${concluded ? "line-through" : ""}`}
+                    data-testid="title"
+                >{props.tasks.task}</p>)}  
             </div>
             {!concluded && (
                 <div className="flex gap-4 w-fit justify-center">
-                    <button onClick={() => {
+                    <button 
+                    data-testid="edit-button"
+                    onClick={() => {
                         if (editMode) props.saveEditTask(props.tasks, title);
                         setEditMode(!editMode);
                     }}>Editar</button>

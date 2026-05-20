@@ -11,4 +11,8 @@ export default defineConfig({
 
     babel({ presets: [reactCompilerPreset()] })
   ],
+  test: {
+    environment: 'jsdom',
+    globals: true,
+  }
 })
