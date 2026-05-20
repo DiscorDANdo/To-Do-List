@@ -6,6 +6,9 @@ function App() {
   const localTasks = JSON.parse(window.localStorage.getItem("tasks")) || [];
   const [tasks, setTasks] = useState(localTasks);
 
+  const concludedTasks = tasks.filter((task) => task.status === "concluded");
+  const pendingTasks = tasks.filter((task) => task.status === "pending");
+
   function saveEditTask(task, title) {
     // 1. Create a shallow copy of the state array
     let auxTasks = [...tasks]; 
@@ -50,7 +53,6 @@ function App() {
   }
 
   function AddTask(taskDescription) {
-    // 1. Create a shallow copy
     let auxTasks = [...tasks]; 
     let id = 0;
 
@@ -82,12 +84,26 @@ function App() {
       </div>
 
       <Insert AddTask={AddTask} />
-      <TaskList 
-        tasks={tasks}
-        saveEditTask={saveEditTask}
-        // Fixed the prop name below to match what TasksItems expects
-        saveConcludedTask={saveConcludedTask} 
-      />
+
+      <div className="grid grid-cols-2 gap-4 w-full max-w-3xl place-content-center">
+        <div className="flex flex-col gap-4">
+          <h1>Tasks abertas</h1>
+          <TaskList 
+            tasks={pendingTasks}
+            saveEditTask={saveEditTask}
+            saveConcludedTask={saveConcludedTask} 
+          />
+        </div>    
+
+        <div className="flex flex-col gap-4">
+          <h1>Tasks finalizadas</h1>
+          <TaskList 
+            tasks={concludedTasks}
+            saveEditTask={saveEditTask}
+            saveConcludedTask={saveConcludedTask} 
+          />
+        </div>
+      </div>
     </div>
   );
 }
